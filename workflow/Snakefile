@@ -14,7 +14,7 @@ i = datetime.now()
 TIME = i.strftime('%Y-%m-%d')
 
 # specify config file
-configfile = "workflow/config.yml"
+configfile: "workflow/config.yml"
 
 # parse config.yml file
 OUT = config['outname']
@@ -29,10 +29,10 @@ CHAIN_TO_38 = config['CrossMap']['chain_to_hg38']
 if config['CrossMap']['download_chains'] == 'true':
         CHAIN_TO_19 = f"{os.getcwd()}/CrossMapRefData/{os.path.basename(CHAIN_TO_19)}"
         CHAIN_TO_38 = f"{os.getcwd()}/CrossMapRefData/{os.path.basename(CHAIN_TO_38)}"
-    else:
-        assert (CHAIN_TO_19 != "none" and CHAIN_TO_38 != "none"), "Must provide both liftover chain files in workflow/config.yml file"
-        assert os.path.exists(config['CrossMap']['chain_to_hg19']), f"Did not find liftover chain: {config['CrossMap']['chain_to_hg19']}"
-        assert os.path.exists(config['CrossMap']['chain_to_hg38']), f"Did not find liftover chain: {config['CrossMap']['chain_to_hg38']}"
+else:
+    assert (CHAIN_TO_19 != "none" and CHAIN_TO_38 != "none"), "Must provide both liftover chain files in workflow/config.yml file"
+    assert os.path.exists(config['CrossMap']['chain_to_hg19']), f"Did not find liftover chain: {config['CrossMap']['chain_to_hg19']}"
+    assert os.path.exists(config['CrossMap']['chain_to_hg38']), f"Did not find liftover chain: {config['CrossMap']['chain_to_hg38']}"
 
 # make subdirectories
 if not os.path.exists("CrossMapRefData"): os.mkdir("CrossMapRefData")
