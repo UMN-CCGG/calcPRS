@@ -55,8 +55,8 @@ if config['run_settings']['local_run'] == 'true':
 else:
 	localrules: all
 	assert config['run_settings']['scheduler'] in ['pbs', 'slurm'], print(f"\nThe scheduler specified in run_settings -> scheduler: \'{config['run_settings']['scheduler']}\' is invalid.\n")
-    assert os.path.exists(config['run_settings']['cluster_config']), print(f"\nMust provide a cluster configuration file under run_settings -> cluster_config in the config.yml file\nFile \'{config['run_settings']['cluster_config']}\' does not exist\n")
-    clusterfile = yaml.load(open(config['run_settings']['cluster_config']), Loader=yaml.FullLoader)
+	assert os.path.exists(config['run_settings']['cluster_config']), print(f"\nMust provide a cluster configuration file under run_settings -> cluster_config in the config.yml file\nFile \'{config['run_settings']['cluster_config']}\' does not exist\n")
+	clusterfile = yaml.load(open(config['run_settings']['cluster_config']), Loader=yaml.FullLoader)
 
 # Conditionally set expected outputs of various steps depending on flags in config.yml
 def get_all_inputs(wildcards):
