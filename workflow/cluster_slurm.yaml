@@ -1,0 +1,14 @@
+# Modify lines indicated with MODIFY
+__default__:
+  A: 'araduski' # MODIFY.  This should be the name of your account with your HPC system
+  p: 'ccgg' # MODIFY.  This should be the name of the queue within your HPC system
+  job-name: "{rule}"
+  time: "4:00:00"
+  mem: "5G"
+  ntasks: "1"
+  nodes: "1"
+  mail-user: "araduski@umn.edu" # MODIFY
+  mail-type: "FAIL"
+  o: "OandE/{rule}.{wildcards}.out"
+  e: "OandE/{rule}.{wildcards}.err"
+
