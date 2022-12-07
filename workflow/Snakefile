@@ -69,7 +69,7 @@ rule all: #Main function that determines which files snakemake will attempt to p
 rule check_model_for_duplicates: # check model for duplicated sites
 	output: "{model}/tmp/duplicated.snp"
 	params:
-		in_model = lambda wildcards: MODEL[wildcards.model]['model_file']
+		in_model = lambda wildcards: MODEL[wildcards.model]['model_file'],
 		prefix = "{model}/tmp/duplicated"
 	run:
 		shell(f"cat {{params.in_model}} | awk 'FNR>1{ print $1":"$2":"$3":"$4}' | sort | uniq -d  > {{params.prefix}}.snp")
@@ -77,7 +77,7 @@ rule check_model_for_duplicates: # check model for duplicated sites
 rule make_bed: # make bed file from published PGS model
 	output: "{model}/tmp/{model}.bed"
 	params:
-		in_model = lambda wildcards: MODEL[wildcards.model]['model_file']
+		in_model = lambda wildcards: MODEL[wildcards.model]['model_file'],
 		prefix = "{model}/tmp/{model}"
 	run:
 		shell(f"cat {{params.in_model}} | awk 'FNR>1{print "chr"$1, $2-1, $2}' OFS='\t' > {{params.prefix}}.bed")
@@ -86,7 +86,7 @@ rule cross_map: # Convert coordinates, if needed
 	input: CHAIN_TO_19, CHAIN_TO_38
 	output: f"{{model}}/tmp/{{model}}_lifted.bed"
 	params: 
-		in_model_build = lambda wildcards: MODEL[wildcards.model]['model_build']
+		in_model_build = lambda wildcards: MODEL[wildcards.model]['model_build'],
 		in_geno_build = lambda wildcards: GENOTYPE[wildcards.geno]['geno_build']
 	run:
 		if {{in_model_build}} != {{in_geno_build}}:
