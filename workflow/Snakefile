@@ -93,7 +93,7 @@ rule cross_map: # Convert coordinates, if needed
 	input: CHAIN_TO_19, CHAIN_TO_38
 	output: f"{{model}}/lifted/{{model}}_lifted.bed"
 	params: 
-		in_model_build = MODEL['model_build']
+		in_model_build = MODEL['model_build'],
 		in_geno_build = GENOTYPE['geno_build']
 	run:
 		if {{in_model_build}} != {{in_geno_build}}:
