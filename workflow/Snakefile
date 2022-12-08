@@ -43,6 +43,7 @@ for modl in MODEL.keys(): # make a subdirectory for each model
 	if not os.path.exists(modl):
 		os.mkdir(modl)
 		os.mkdir(f"{modl}/tmp")
+		os.mkdir(f"{modl}/lifted")
 	for geno in GENOTYPE.keys(): # make a subdirectory for each genotype dataset
 		if not os.path.exists(f"{modl}/{geno}"):
 			os.mkdir(f"{modl}/{geno}")
@@ -60,8 +61,9 @@ else:
 
 # Conditionally set expected outputs of various steps depending on flags in config.yml
 def get_all_inputs(wildcards):
-	input_list = [f"{OUT}-report.pdf"]
-	input_list += expand(f"{{model}}/{{geno}}_final_model", model=MODEL.keys(), geno=GENOTYPE.keys())
+#	input_list = [f"{OUT}-report.pdf"]
+#	input_list += expand(f"{{model}}/{{geno}}_final_model", model=MODEL.keys(), geno=GENOTYPE.keys())
+	input_list = expand(f"{{model}}/lifted/{{model}}_lifted.bed", model=MODEL.keys())
 	return(input_list)
 
 rule all: #Main function that determines which files snakemake will attempt to produce upon running
@@ -87,7 +89,7 @@ rule make_bed: # make bed file from published PGS model
 
 rule cross_map: # Convert coordinates, if needed
 	input: CHAIN_TO_19, CHAIN_TO_38
-	output: f"{{model}}/tmp/{{model}}_lifted.bed"
+	output: f"{{model}}/lifted/{{model}}_lifted.bed"
 	params: 
 		in_model_build = lambda wildcards: MODEL[wildcards.model]['model_build'],
 		in_geno_build = lambda wildcards: GENOTYPE[wildcards.geno]['geno_build']
