@@ -71,7 +71,7 @@ rule check_model_for_duplicates: # check model for duplicated sites
 	params:
 		in_model = lambda wildcards: MODEL[wildcards.model]['model_file'],
 		prefix = "{model}/tmp/duplicated"
-		awk_string = "\'FNR > 1 {print $1":"$2":"$3":"$4}\'"
+		awk_string = "\'FNR > 1 {print $1,$2,$3,$4}\' OFS=\':\'"
 	run:
 		shell(f"cat {{params.in_model}} | awk {{params.awk_string}} | sort | uniq -d > {{params.prefix}}.snp")
 
@@ -79,9 +79,10 @@ rule make_bed: # make bed file from published PGS model
 	output: "{model}/tmp/{model}.bed"
 	params:
 		in_model = lambda wildcards: MODEL[wildcards.model]['model_file'],
-		prefix = "{model}/tmp/{model}"
+		prefix = "{model}/tmp/{model}",
+		awk_string = "\'FNR>1{print \"chr\"$2, $2-1, $2}\' OFS=\'\\t\'"
 	run:
-		shell(f"cat {{params.in_model}} | awk 'FNR>1{print "chr"$1, $2-1, $2}' OFS='\t' > {{params.prefix}}.bed")
+		shell(f"cat {{params.in_model}} | awk {{params.awk_string}} > {{params.prefix}}.bed")
 
 rule cross_map: # Convert coordinates, if needed
 	input: CHAIN_TO_19, CHAIN_TO_38
