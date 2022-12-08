@@ -62,6 +62,7 @@ else:
 def get_all_inputs(wildcards):
 	input_list = [f"{OUT}-report.pdf"]
 	input_list += expand(f"{{model}}/{{geno}}_final_model", model=MODEL.keys(), geno=GENOTYPE.keys())
+	return(input_list)
 
 rule all: #Main function that determines which files snakemake will attempt to produce upon running
 	input: get_all_inputs
