@@ -4,18 +4,19 @@ models: #!! ONLY USE TEXT AND NUMBERS FOR NAMING MODELS.  List PGS models to use
   "model1":
       model_file: "/path/to/pgs/model" # MODIFY
       model_build: "hg38" # MODIFY confirm what genome build the model data is in
-  "model2":
-      model_file: "/path/to/pgs/model" # MODIFY confirm what genome build the model data is in
-      model_build: "hg38" # MODIFY 
+#  "model2": # for now just focus on one model, one genotype set
+#      model_file: "/path/to/pgs/model" # MODIFY confirm what genome build the model data is in
+#      model_build: "hg38" # MODIFY 
 genotypes: #!! ONLY USE TEXT AND NUMBERS FOR NAMING DATASETS.  List one or more plink prefixes for data to be 
   "dataset1":
       data: "/path/to/plink/prefix" # MODIFY
       geno_build: "hg38" # MODIFY confirm what genome build the genotype data is in
-  "dataset2":
-      data: "/path/to/plink/prfix" # MODIFY
-      geno_build: "hg38" # MODIFY confirm what genome build the genotype data is in
+#  "dataset2": # for now just focus on one model and one genotype set
+#      data: "/path/to/plink/prfix" # MODIFY
+#      geno_build: "hg38" # MODIFY confirm what genome build the genotype data is in
 singularity:
   image: "/path/to/singularity/image" # TO CREATE
+perform_crossmap: 'true' # MODIFY - should the model coordinates be lifted over to match genotype coordinates i.e. are the two files in different coords?
 CrossMap:
   exec: "/home/araduski/araduski/.local/bin/CrossMap.py" 
   download_chains: 'false' # if set to TRUE, provide paths to download
