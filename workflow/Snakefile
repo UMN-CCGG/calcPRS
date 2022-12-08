@@ -71,8 +71,9 @@ rule check_model_for_duplicates: # check model for duplicated sites
 	params:
 		in_model = lambda wildcards: MODEL[wildcards.model]['model_file'],
 		prefix = "{model}/tmp/duplicated"
+		awk_string = "\'FNR > 1 {print $1":"$2":"$3":"$4}\'"
 	run:
-		shell(f"cat {{params.in_model}} | awk \'FNR>1{ print $1":"$2":"$3":"$4}\' | sort | uniq -d  > {{params.prefix}}.snp")
+		shell(f"cat {{params.in_model}} | awk {{params.awk_string}} | sort | uniq -d > {{params.prefix}}.snp")
 
 rule make_bed: # make bed file from published PGS model
 	output: "{model}/tmp/{model}.bed"
