@@ -64,6 +64,8 @@ def get_all_inputs(wildcards):
 #	input_list = [f"{OUT}-report.pdf"]
 #	input_list += expand(f"{{model}}/{{geno}}_final_model", model=MODEL.keys(), geno=GENOTYPE.keys())
 	input_list = expand(f"{{model}}/lifted/{{model}}_lifted.bed", model=MODEL.keys())
+	input_list += expand(f"{{model}}/tmp/duplicated.snp", model=MODEL.keys())
+	input_list += expand(f"{{model}}/tmp/{{model}}.bed", model=MODEL.keys())
 	return(input_list)
 
 rule all: #Main function that determines which files snakemake will attempt to produce upon running
@@ -88,7 +90,7 @@ rule make_bed: # make bed file from published PGS model
 		shell(f"cat {{params.in_model}} | awk {{params.awk_string}} > {{params.prefix}}.bed")
 
 rule cross_map: # Convert coordinates, if needed
-	input: CHAIN_TO_19, CHAIN_TO_38
+	input: CHAIN_TO_19, CHAIN_TO_38, f"{{geno}}"
 	output: f"{{model}}/lifted/{{model}}_lifted.bed"
 	params: 
 		in_model_build = lambda wildcards: MODEL[wildcards.model]['model_build'],
