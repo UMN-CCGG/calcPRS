@@ -22,6 +22,8 @@ MODEL = config['models']
 GENOTYPE = config['genotypes']
 PYTHON = config['python']
 CROSSMAP = config['CrossMap']['exec']
+MODEL_BUILD = config['models']['model_build']
+GENO_BUILD = config['genotypes']['geno_build']
 
 # are the liftover chains provided, or do we need to download -- downloading will take some debugging for now (12/7/2022)
 CHAIN_TO_19 = config['CrossMap']['chain_to_hg19']
@@ -90,16 +92,13 @@ rule make_bed: # make bed file from published PGS model
 		shell(f"cat {{params.in_model}} | awk {{params.awk_string}} > {{params.prefix}}.bed")
 
 rule cross_map: # Convert coordinates, if needed
-	input: CHAIN_TO_19, CHAIN_TO_38
+	input: CHAIN_TO_19, CHAIN_TO_38, MODEL_BUILD, GENO_BUILD
 	output: f"{{model}}/lifted/{{model}}_lifted.bed"
-	params: 
-		in_model_build = MODEL['model_build'],
-		in_geno_build = GENOTYPE['geno_build']
 	run:
-		if {{in_model_build}} != {{in_geno_build}}:
-			if {{in_geno_build}} == "hg38":
+		if MODEL_BUILD != GENO_BUILD:
+			if GENO_BUILD == "hg38":
 				shell(f"{CROSSMAP} bed {CHAIN_TO_38} {{model}}/tmp/{{model}}.bed {{output}}")
-			if {{in_geno_build}} == "hg19":
+			if GENO_BUILD == "hg19":
 				shell(f"{CROSSMAP} bed {CHAIN_TO_19} {{model}}/tmp/{{model}}.bed {{output}}")
 		else: # just cp not lifted bed over to 
 			shell(f"cp {{model}}/tmp/{{model}}.bed {{output}}")	
