@@ -18,12 +18,14 @@ configfile: "workflow/config.yml"
 
 # parse config.yml file
 OUT = config['outname']
-MODEL = config['models']
-GENOTYPE = config['genotypes']
+MODELNAME = config['model_name']
+GENONAME = config['genotype_name']
+MODELBUILD = config['model_build']
+GENOBUILD = config['genotype_build']
+MODELFILE = config['model_file']
+GENODATA = config['genotype_data']
 PYTHON = config['python']
 CROSSMAP = config['CrossMap']['exec']
-MODEL_BUILD = config['models']['model_build']
-GENO_BUILD = config['genotypes']['geno_build']
 
 # are the liftover chains provided, or do we need to download -- downloading will take some debugging for now (12/7/2022)
 CHAIN_TO_19 = config['CrossMap']['chain_to_hg19']
@@ -41,15 +43,13 @@ if not os.path.exists("CrossMapRefData"): os.mkdir("CrossMapRefData")
 if not os.path.exists("accessory"): os.mkdir("accessory")
 if not os.path.exists("OandE"): os.mkdir("OandE")
 
-for modl in MODEL.keys(): # make a subdirectory for each model
-	if not os.path.exists(modl):
-		os.mkdir(modl)
-		os.mkdir(f"{modl}/tmp")
-		os.mkdir(f"{modl}/lifted")
-	for geno in GENOTYPE.keys(): # make a subdirectory for each genotype dataset
-		if not os.path.exists(f"{modl}/{geno}"):
-			os.mkdir(f"{modl}/{geno}")
-			os.mkdir(f"{modl}/{geno}/tmp")
+if not os.path.exists(MODELNAME):
+	os.mkdir(MODELNAME)
+	os.mkdir(f"{MODELNAME}/tmp")
+	os.mkdir(f"{MODELNAME}/lifted")
+if not os.path.exists(f"{MODELNAME}/{GENONAME}"):
+	os.mkdir(f"{MODELNAME}/{GENONAME}")
+	os.mkdir(f"{MODELNAME}/{GENONAME}/tmp")
 
 # run locally or submit to cluster depending on config.yml
 run_specs = {'__default__':""} # set default to empty string in case of local run
@@ -65,40 +65,40 @@ else:
 def get_all_inputs(wildcards):
 #	input_list = [f"{OUT}-report.pdf"]
 #	input_list += expand(f"{{model}}/{{geno}}_final_model", model=MODEL.keys(), geno=GENOTYPE.keys())
-	input_list = expand(f"{{model}}/lifted/{{model}}_lifted.bed", model=MODEL.keys())
-	input_list += expand(f"{{model}}/tmp/duplicated.snp", model=MODEL.keys())
-	input_list += expand(f"{{model}}/tmp/{{model}}.bed", model=MODEL.keys())
+	input_list = expand(f"{MODELNAME}/lifted/{MODELNAME}_lifted.bed")
+	input_list += expand(f"{MODELNAME}/tmp/duplicated.snp")
+	input_list += expand(f"{MODELNAME}/tmp/{MODELNAME}.bed")
 	return(input_list)
 
 rule all: #Main function that determines which files snakemake will attempt to produce upon running
 	input: get_all_inputs
 
 rule check_model_for_duplicates: # check model for duplicated sites
-	output: "{model}/tmp/duplicated.snp"
+	input: MODELFILE
+	output: "{MODELNAME}/tmp/duplicated.snp"
 	params:
-		in_model = lambda wildcards: MODEL[wildcards.model]['model_file'],
-		prefix = "{model}/tmp/duplicated",
+		prefix = "{MODELNAME}/tmp/duplicated",
 		awk_string = "\'FNR > 1 {print $1,$2,$3,$4}\' OFS=\':\'"
 	run:
-		shell(f"cat {{params.in_model}} | awk {{params.awk_string}} | sort | uniq -d > {{params.prefix}}.snp")
+		shell(f"grep -v ^# {MODELFILE} | awk {{params.awk_string}} | sort | uniq -d > {{params.prefix}}.snp")
 
 rule make_bed: # make bed file from published PGS model
-	output: "{model}/tmp/{model}.bed"
+	input: MODELFILE
+	output: "{MODELNAME}/tmp/{MODELNAME}.bed"
 	params:
-		in_model = lambda wildcards: MODEL[wildcards.model]['model_file'],
-		prefix = "{model}/tmp/{model}",
-		awk_string = "\'FNR>1{print \"chr\"$2, $2-1, $2}\' OFS=\'\\t\'"
+		prefix = "{MODELNAME}/tmp/{MODELNAME}",
+		awk_string = "\'FNR>1{print $1, $2-1, $2}\' OFS=\'\\t\'"
 	run:
-		shell(f"cat {{params.in_model}} | awk {{params.awk_string}} > {{params.prefix}}.bed")
+		shell(f"grep -v ^# {MODELFILE} | awk {{params.awk_string}} > {{params.prefix}}.bed")
 
 rule cross_map: # Convert coordinates, if needed
-	input: CHAIN_TO_19, CHAIN_TO_38, MODEL_BUILD, GENO_BUILD
-	output: f"{{model}}/lifted/{{model}}_lifted.bed"
+	input: CHAIN_TO_19, CHAIN_TO_38
+	output: f"{MODELNAME}/lifted/{MODELNAME}_lifted.bed"
 	run:
-		if MODEL_BUILD != GENO_BUILD:
-			if GENO_BUILD == "hg38":
-				shell(f"{CROSSMAP} bed {CHAIN_TO_38} {{model}}/tmp/{{model}}.bed {{output}}")
-			if GENO_BUILD == "hg19":
-				shell(f"{CROSSMAP} bed {CHAIN_TO_19} {{model}}/tmp/{{model}}.bed {{output}}")
+		if MODELBUILD != GENOBUILD:
+			if GENOBUILD == "hg38":
+				shell(f"{CROSSMAP} bed {CHAIN_TO_38} {{MODELNAME}}/tmp/{{MODELNAME}}.bed {{output}}")
+			if GENOBUILD == "hg19":
+				shell(f"{CROSSMAP} bed {CHAIN_TO_19} {{MODELNAME}}/tmp/{{MODELNAME}}.bed {{output}}")
 		else: # just cp not lifted bed over to 
-			shell(f"cp {{model}}/tmp/{{model}}.bed {{output}}")	
+			shell(f"cp {{MODELNAME}}/tmp/{{MODELNAME}}.bed {{output}}")	
