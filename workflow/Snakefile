@@ -109,11 +109,11 @@ rule cross_map: # Convert coordinates, if needed
 	run:
 		if MODELBUILD != GENOBUILD:
 			if GENOBUILD == "hg38":
-				shell(f"{CROSSMAP} bed {CHAIN_TO_38} {{MODELNAME}}/tmp/{{MODELNAME}}.bed {{output}}")
+				shell(f"{CROSSMAP} bed {CHAIN_TO_38} {{MODELNAME}}/tmp/{{MODELNAME}}.bed {MODELNAME}/lifted/{MODELNAME}_lifted.bed")
 			if GENOBUILD == "hg19":
-				shell(f"{CROSSMAP} bed {CHAIN_TO_19} {{MODELNAME}}/tmp/{{MODELNAME}}.bed {{output}}")
+				shell(f"{CROSSMAP} bed {CHAIN_TO_19} {{MODELNAME}}/tmp/{{MODELNAME}}.bed {MODELNAME}/lifted/{MODELNAME}_lifted.bed")
 		else: # just cp not lifted bed over to 
-			shell(f"cp {{MODELNAME}}/tmp/{{MODELNAME}}.bed {{output}}; "
+			shell(f"cp {{MODELNAME}}/tmp/{{MODELNAME}}.bed {MODELNAME}/lifted/{MODELNAME}_lifted.bed; "
 			      f"touch {{MODELNAME}}/lifted/{{MODELNAME}}_lifted.bed.unmap")	
 
 rule remove_unlifted_variants: # Remove variants that were not lifted over from the model file
