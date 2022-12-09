@@ -98,7 +98,7 @@ rule make_bed: # make bed file from published PGS model
 		shell(f"grep -v ^# {MODELFILE} | awk {{params.awk_string}} > {{params.prefix}}.bed")
 
 rule cross_map: # Convert coordinates, if needed
-	input: get_cross_map_inputs
+	input: get_crossmap_inputs
 	output: f"{MODELNAME}/lifted/{MODELNAME}_lifted.bed"
 	run:
 		if MODELBUILD != GENOBUILD:
