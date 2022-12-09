@@ -71,6 +71,11 @@ def get_all_inputs(wildcards):
 	input_list += expand(f"{MODELNAME}/CLEAN_REF_{MODELNAME}.txt")
 	return(input_list)
 
+def get_crossmap_inputs(wildcards):
+    input_list = [CHAIN_TO_19, CHAIN_TO_38]
+    input_list += [f"{MODELNAME}/tmp/{MODELNAME}.bed"]
+    return(input_list)
+
 rule all: #Main function that determines which files snakemake will attempt to produce upon running
 	input: get_all_inputs
 
@@ -93,7 +98,7 @@ rule make_bed: # make bed file from published PGS model
 		shell(f"grep -v ^# {MODELFILE} | awk {{params.awk_string}} > {{params.prefix}}.bed")
 
 rule cross_map: # Convert coordinates, if needed
-	input: CHAIN_TO_19, CHAIN_TO_38
+	input: get_cross_map_inputs
 	output: f"{MODELNAME}/lifted/{MODELNAME}_lifted.bed"
 	run:
 		if MODELBUILD != GENOBUILD:
