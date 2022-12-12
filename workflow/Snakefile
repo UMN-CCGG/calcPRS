@@ -69,6 +69,7 @@ def get_all_inputs(wildcards):
 	input_list += expand(f"{MODELNAME}/tmp/duplicated.snp")
 	input_list += expand(f"{MODELNAME}/tmp/{MODELNAME}.bed")
 	input_list += expand(f"{MODELNAME}/CLEAN_REF_{MODELNAME}.txt")
+	input_list += expand(f"{MODELNAME}/{MODELNAME}_ambiguous.snps")
 #	input_list += expand(f"{MODELNAME}/lifted/{MODELNAME}_lifted.bed.unmap")
 	return(input_list)
 
@@ -80,6 +81,7 @@ def get_crossmap_inputs(wildcards):
 def get_remove_unlifted_variants_input(wildcards):
 	input_list = [f"{MODELNAME}/lifted/{MODELNAME}_lifted.bed.unmap"]
 	return(input_list)
+
 
 rule all: #Main function that determines which files snakemake will attempt to produce upon running
 	input: get_all_inputs
@@ -126,3 +128,12 @@ rule remove_unlifted_variants: # Remove variants that were not lifted over from 
 		if os.stat(str(input)).st_size > 0:
 			shell(f"grep -v  ^# {{input}} | awk {{params.awk_string}} > {MODELNAME}/tmp/{MODELNAME}_unlifted_to_REMOVE; "
 			      f"grep -vwf {MODELNAME}/tmp/{MODELNAME}_unlifted_to_REMOVE {MODELFILE} > {{output}}")
+
+rule get_ambiguous_variants: # get list of variants that have ambiguous nucleotides
+	input: "{MODELNAME}/CLEAN_REF_{MODELNAME}.txt"
+	output: "{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL"
+	params: 
+		awk_string = "\'FNR>1{if(($3 == \"A\" && $4 == \"T\") || ($3 == \"T\" && $4 == \"A\") || ($3 == \"C\" && $4 == \"G\") || ($3 == \"G\" && $4 == \"C\")) print $1,$4} OFS=\'\t\'"
+	run:
+		shell(f"grep -v ^# {{input}} | awk {{params.awk_string}} > {MODELNAME}/{MODELNAME}_ambiguous.snps; "
+			  f"grep -vwf {MODELNAME}/{MODELNAME}_ambiguous.snps {{input}} > {{output}}")
