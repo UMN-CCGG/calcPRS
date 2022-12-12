@@ -133,7 +133,7 @@ rule get_ambiguous_variants: # get list of variants that have ambiguous nucleoti
 	input: "{MODELNAME}/CLEAN_REF_{MODELNAME}.txt"
 	output: "{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"
 	params: 
-		awk_string = "\'FNR>1{if(($3 == \"A\" && $4 == \"T\") || ($3 == \"T\" && $4 == \"A\") || ($3 == \"C\" && $4 == \"G\") || ($3 == \"G\" && $4 == \"C\")) print $1,$4} OFS=\'\t\'"
+		awk_string = "\'{if(($3 == \"A\" && $4 == \"T\") || ($3 == \"T\" && $4 == \"A\") || ($3 == \"C\" && $4 == \"G\") || ($3 == \"G\" && $4 == \"C\")) print $1,$2} OFS=\'\t\'}\'"
 	run:
 		shell(f"grep -v ^# {{input}} | awk {{params.awk_string}} > {MODELNAME}/{MODELNAME}_ambiguous.snps; "
 			  f"grep -vwf {MODELNAME}/{MODELNAME}_ambiguous.snps {{input}} > {{output}}")
