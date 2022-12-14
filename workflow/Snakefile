@@ -86,8 +86,8 @@ def get_remove_unlifted_variants_input(wildcards):
 	return(input_list)
 
 def get_align_input(wildcards):
-	input_list = [f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"] # model file
-	input_list += expand(f"{GENODATA}_chr{{chrom}}.bim", chrom=CHROMS) # chrom bim files
+#	input_list = [f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"] # model file
+	input_list = expand(f"{GENODATA}_chr{{chrom}}.bim", chrom=CHROMS) # chrom bim files
 	return(input_list)
 
 
@@ -149,5 +149,7 @@ rule get_ambiguous_variants: # get list of variants that have ambiguous nucleoti
 rule align_PRS: # 
 	input: get_align_input
 	output: "{MODELNAME}/{MODELNAME}_chr{chrom}.txt"
+	params:
+		model = f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"
 	run:
-		shell(f"{CMD_PREFIX} Rscript scripts/align_PRS_remove_ambig.R ")
+		shell(f"{CMD_PREFIX} Rscript scripts/align_PRS_remove_ambig.R {{params.model}} {{input}}")
