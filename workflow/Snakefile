@@ -71,8 +71,7 @@ def get_all_outputs(wildcards):
 	output_list += expand(f"{MODELNAME}/tmp/duplicated.snp")
 	output_list += expand(f"{MODELNAME}/tmp/{MODELNAME}.bed")
 	output_list += expand(f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt")
-#	output_list += expand(f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt")
-#	output_list += expand(f"{MODELNAME}/{MODELNAME}_chr{CHROMS}_clean_weights.txt")
+	output_list += expand(f"{MODELNAME}/{MODELNAME}_chr{{chrom}}_clean_weights.txt", chrom={CHROMS})
 	return(output_list)
 
 def get_crossmap_inputs(wildcards):
@@ -152,8 +151,8 @@ rule remove_unlifted_variants: # Remove variants that were not lifted over from 
 #			  f"grep -vwf {MODELNAME}/{MODELNAME}_ambiguous.snps {{input}} > {{output}}")
 
 rule align_PRS: # 
-	input: expand(f"{GENODATA}_chr{CHROMS}.bim")
-	output: f"{MODELNAME}/{MODELNAME}_chr{CHROMS}_clean_weights.txt"
+	input: expand(f"{GENODATA}_chr{{chrom}}.bim", chrom={CHROMS})
+	output: expand(f"{MODELNAME}/{MODELNAME}_chr{{chrom}}_clean_weights.txt", chrom={CHROMS})
 	params:
 		model = f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"
 	run:
