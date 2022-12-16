@@ -71,7 +71,7 @@ def get_all_outputs(wildcards):
 	output_list += expand(f"{MODELNAME}/tmp/duplicated.snp")
 	output_list += expand(f"{MODELNAME}/tmp/{MODELNAME}.bed")
 	output_list += expand(f"{MODELNAME}/lifted/{MODELNAME}_lifted_merged.bed")
-	output_list += expand(f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt")
+#	output_list += expand(f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt")
 #	output_list += expand(f"{MODELNAME}/{MODELNAME}_chr{CHROMS}_clean_weights.txt")
 	return(output_list)
 
@@ -137,7 +137,8 @@ rule remove_unlifted_variants: # Remove variants that were not lifted over from 
 	run:
 		if os.stat(str(input)).st_size > 0:
 			shell(f"grep -v  ^# {{input}} | awk {{params.awk_string}} > {MODELNAME}/tmp/{MODELNAME}_unlifted_to_REMOVE; "
-			      f"grep -vwf {MODELNAME}/tmp/{MODELNAME}_unlifted_to_REMOVE {MODELFILE} > {MODELNAME}/CLEAN_REF_{MODELNAME}.txt; "
+			      f"grep -vwf {MODELNAME}/tmp/{MODELNAME}_unlifted_to_REMOVE {MODELFILE} > {MODELNAME}/REF_{MODELNAME}.txt; "
+			      f"grep -v ^# {MODELNAME}/REF_{MODELNAME}.txt > {MODELNAME}/CLEAN_REF_{MODELNAME}.txt"
 			      f"paste {MODELNAME}/CLEAN_REF_{MODELNAME}.txt {MODELNAME}/lifted/{MODELNAME}_lifted_with_head.bed > {MODELNAME}/lifted/{MODELNAME}_lifted_merged.bed")
 
 #rule get_ambiguous_variants: # get list of variants that have ambiguous nucleotides
