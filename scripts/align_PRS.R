@@ -10,11 +10,11 @@ output = args[3]
 chr <- str_remove(string = bim_file, pattern = "^.*_") %>% str_remove(pattern= ".bim$")
 
 # select model -- this has all variants listed
-model <- read_table(prs_model, comment = "#")
+model <- read_table(prs_model, comment = "#", col_names = c('chr', 'bp', 'effect_allele', 'other_allele', 'effect_weight')
 bim <- read_table(bim_file, col_names = c('chr', 'id', 'cm', 'bp', 'A1', 'A2'), col_types = list('n', 'c', 'n', 'n', 'c', 'c'))
 
 joined_info <- bim %>%
-	left_join(model, by = c("chr" = "chr_name", "bp" = "chr_position")) %>%
+	left_join(model, by = c("chr", "bp")) %>%
 	filter(!is.na(effect_allele))
 
 
