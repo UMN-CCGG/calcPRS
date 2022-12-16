@@ -146,7 +146,7 @@ rule get_ambiguous_variants: # get list of variants that have ambiguous nucleoti
 			  f"grep -vwf {MODELNAME}/{MODELNAME}_ambiguous.snps {{input}} > {{output}}")
 
 rule align_PRS: # 
-	input: f"{GENODATA}_chr{CHROMS}.bim"
+	input: expand(f"{GENODATA}_chr{CHROMS}.bim")
 	output: f"{MODELNAME}/{MODELNAME}_chr{CHROMS}_clean_weights.txt"
 	params:
 		model = f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"
