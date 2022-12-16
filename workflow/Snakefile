@@ -26,6 +26,7 @@ MODELFILE = config['model_file']
 GENODATA = config['genotype_data']
 PYTHON = config['python']
 CROSSMAP = config['CrossMap']['exec']
+CMD_PREFIX = config['cmd_prefix']
 
 # are the liftover chains provided, or do we need to download -- downloading will take some debugging for now (12/7/2022)
 CHAIN_TO_19 = config['CrossMap']['chain_to_hg19']
