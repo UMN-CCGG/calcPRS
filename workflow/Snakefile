@@ -83,10 +83,10 @@ def get_remove_unlifted_variants_input(wildcards):
 	input_list = [f"{MODELNAME}/lifted/{MODELNAME}_lifted.bed.unmap"]
 	return(input_list)
 
-def get_align_input(wildcards):
+#def get_align_input(wildcards):
 #	input_list = [f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"] # model file
-	input_list = expand(f"{GENODATA}_chr{{chrom}}.bim", chrom=CHROMS) # chrom bim files
-	return(input_list)
+#	input_list = expand(f"{GENODATA}_chr{{chrom}}.bim", chrom=CHROMS) # chrom bim files
+#	return(input_list)
 
 
 rule all: #Main function that determines which files snakemake will attempt to produce upon running
@@ -145,18 +145,18 @@ rule get_ambiguous_variants: # get list of variants that have ambiguous nucleoti
 			  f"grep -vwf {MODELNAME}/{MODELNAME}_ambiguous.snps {{input}} > {{output}}")
 
 rule align_PRS: # 
-	input: get_align_input
-	output: "{MODELNAME}/{MODELNAME}_chr{chrom}.txt"
+	input: expand(f"{GENODATA}_chr{{chrom}}.bim", chrom=CHROMS)
+	output: expand(f"{MODELNAME}/{MODELNAME}_chr{chrom}.txt", chrom=CHROMS)
 	params:
 		model = f"{MODELNAME}/CLEAN_REF_{MODELNAME}_FINAL.txt"
 	run:
 		shell(f"{CMD_PREFIX} Rscript scripts/align_PRS.R {{params.model}} {{input}} {{output}}")
 		
-rule calc_PRS: # calculate PRS by chromosomes
-	input: get_calc_PRS_input
-	output: "{MODELNAME}/{MODELNAME}_{GENONAME}_PRS_chr{chrom}"
-	params: # Think about what params vs input we need
-		weights = f""
-	run:
-		shell(f"{CMD_PREFIX} plink --bfile {input} --score {weights} num num num --out {output}"
+#rule calc_PRS: # calculate PRS by chromosomes
+#	input: get_calc_PRS_input
+#	output: "{MODELNAME}/{MODELNAME}_{GENONAME}_PRS_chr{chrom}"
+#	params: # Think about what params vs input we need
+#		weights = f""
+#	run:
+#		shell(f"{CMD_PREFIX} plink --bfile {input} --score {weights} num num num --out {output}"
 		
