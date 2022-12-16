@@ -140,7 +140,7 @@ rule remove_unlifted_variants: # Remove variants that were not lifted over from 
 			      f"grep -vwf {MODELNAME}/tmp/{MODELNAME}_unlifted_to_REMOVE {MODELFILE} > {MODELNAME}/REF_{MODELNAME}.txt; "
 			      f"grep -v ^# {MODELNAME}/REF_{MODELNAME}.txt > {MODELNAME}/CLEAN_REF_{MODELNAME}.txt; "
 			      f"paste {MODELNAME}/CLEAN_REF_{MODELNAME}.txt {MODELNAME}/lifted/{MODELNAME}_lifted_with_head.bed > {MODELNAME}/lifted/{MODELNAME}_lifted_merged.bed; "
-			      f"awk {{params.awk_string2}} {MODELNAME}/lifted/{MODELNAME}_lifted_merged.bed > {{output}} )
+			      f"awk {{params.awk_string2}} {MODELNAME}/lifted/{MODELNAME}_lifted_merged.bed > {{output}}")
 
 #rule get_ambiguous_variants: # get list of variants that have ambiguous nucleotides
 #	input: "{MODELNAME}/CLEAN_REF_{MODELNAME}.txt"
