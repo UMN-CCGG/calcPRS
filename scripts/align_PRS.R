@@ -16,11 +16,18 @@ bim <- read_table(bim_file, col_names = c('chr', 'id', 'cm', 'bp', 'A1', 'A2'), 
 joined_info <- bim %>%
 	left_join(model, by = c("chr", "bp")) %>%
 	filter(!is.na(effect_allele))
+# get sites with ambiguous snps
+ambig <- joined_info %>%
+		    filter((A1 == "A" & A2 == "T") | (A1 == "T" & A2 == "A") | (A1 == "C" & A2 == "G") | (A1 == "G" & A2 == "C")) %>%
+		    filter((effect_allele == "A" & other_allele == "T") | (effect_allele == "T" & other_allele == "A") | (effect_allele == "C" & other_allele == "G") | (effect_allele == "G" & other_allele == "C")) 
 
-
+# remove ambig sites
+joined_info_no_ambig <- joined_info %>%
+		    anti_join(ambig, by = c('chr', 'bp'))
+		    
 # take complements in BIM
 
-joined_info_comp <- joined_info %>%
+joined_info_comp <- joined_info_no_ambig %>%
 	mutate(A1_comp = case_when(A1 == "C" ~ "G",
 							   A1 == "T" ~ "A",
 							   A1 == "A" ~ "T",
