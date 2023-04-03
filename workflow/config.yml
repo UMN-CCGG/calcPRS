@@ -1,19 +1,11 @@
 # Modify all lines indicated with MODIFY
-outname: "ALL" # name you want to give to any output
-models: #!! ONLY USE TEXT AND NUMBERS FOR NAMING MODELS.  List PGS models to use
-  "model1":
-      model_file: "/path/to/pgs/model" # MODIFY
-      model_build: "hg38" # MODIFY confirm what genome build the model data is in
-#  "model2": # for now just focus on one model, one genotype set
-#      model_file: "/path/to/pgs/model" # MODIFY confirm what genome build the model data is in
-#      model_build: "hg38" # MODIFY 
-genotypes: #!! ONLY USE TEXT AND NUMBERS FOR NAMING DATASETS.  List one or more plink prefixes for data to be 
-  "dataset1":
-      data: "/path/to/plink/prefix" # MODIFY
-      geno_build: "hg38" # MODIFY confirm what genome build the genotype data is in
-#  "dataset2": # for now just focus on one model and one genotype set
-#      data: "/path/to/plink/prfix" # MODIFY
-#      geno_build: "hg38" # MODIFY confirm what genome build the genotype data is in
+outname: "OUTPUT_NAME" # name you want to give to any output
+model_name: "model_name"#!! ONLY USE TEXT AND NUMBERS FOR NAMING MODELS.  List PGS models to use
+model_file: "/path/to/pgs/model" # MODIFY
+model_build: "hg38" # MODIFY confirm what genome build the model data is in
+genotype_name: "genotype_dataset_name" #!! ONLY USE TEXT AND NUMBERS FOR NAMING DATASETS.  List one or more plink prefixes for data to be 
+genotype_data: "/path/to/plink/prefix" # MODIFY
+genotype_build: "hg38" # MODIFY confirm what genome build the genotype data is in
 singularity:
   image: "/path/to/singularity/image" # TO CREATE
 perform_crossmap: 'true' # MODIFY - should the model coordinates be lifted over to match genotype coordinates i.e. are the two files in different coords?
